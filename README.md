@@ -21,8 +21,8 @@ Built for: Isamani Tours & Safari / Visit Kili Adventures / Kilinge Adventures
 ## Local Setup
 
 ```bash
-git clone https://github.com/isamani-tours/fpt-attendance
-cd fpt-attendance
+git clone https://github.com/cleven12/ismani_fpt_att
+cd ismani_fpt_att
 
 python -m venv venv
 source venv/bin/activate
@@ -48,27 +48,12 @@ Visit `http://localhost:5000`
 
 ---
 
-## Deploy to Railway
 
-```bash
-# Install Railway CLI
-npm i -g @railway/cli
-
-railway login
-railway init
-railway up
-```
-
-Set env vars in Railway dashboard → Variables tab.
-
-Then add custom domain: `fpt.isamanitours.com` → point CNAME to Railway URL.
-
----
 
 ## Admin Access
 
 ```
-https://fpt.isamanitours.com/admin?token=yourtoken
+https://v2.visitkili.com/admin?token=yourtoken
 ```
 
 Set `ADMIN_TOKEN` in `.env` to something strong.
@@ -78,7 +63,7 @@ Set `ADMIN_TOKEN` in `.env` to something strong.
 ## Repo Structure
 
 ```
-fpt-attendance/
+ismani_fpt_att/
 ├── app.py              ← main Flask app
 ├── requirements.txt
 ├── .env.example
