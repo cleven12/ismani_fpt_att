@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FPT Attendance — Isamani Tours & Safari</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #0a0f1e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 24px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #1f2d45;
+      border-radius: 12px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 460px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .logo h1 {
+      color: #f59e0b;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .logo p {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    label {
+      display: block;
+      color: #9ca3af;
+      font-size: 13px;
+      margin-bottom: 6px;
+      margin-top: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input, select {
+      width: 100%;
+      background: #1f2937;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #f3f4f6;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: #f59e0b;
+    }
+
+    select option { background: #1f2937; }
+
+    button {
+      width: 100%;
+      margin-top: 28px;
+      padding: 14px;
+      background: #f59e0b;
+      color: #0a0f1e;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    button:hover { background: #fbbf24; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .alert {
+      margin-top: 20px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .alert.success {
+      background: #052e16;
+      border: 1px solid #16a34a;
+      color: #4ade80;
+    }
+
+    .alert.error {
+      background: #2d0a0a;
+      border: 1px solid #dc2626;
+      color: #f87171;
+    }
+
+    .meta {
+      margin-top: 20px;
+      text-align: center;
+      color: #374151;
+      font-size: 11px;
+    }
+
+    .loading { display: none; }
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid #0a0f1e;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .date-badge {
+      text-align: center;
+      color: #4b5563;
+      font-size: 12px;
+      margin-bottom: 24px;
+      padding: 6px 12px;
+      background: #1f2937;
+      border-radius: 20px;
+      display: inline-block;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <h1>Isamani Tours & Safari</h1>
+      <p>Field Practical Training — Attendance</p>
+    </div>
+
+    <div class="date-badge" id="dateBadge"></div>
+
+    <div>
+      <label for="full_name">Full Name</label>
+      <input type="text" id="full_name" placeholder="e.g. Amina Juma" autocomplete="off">
+
+      <label for="reg_number">Registration Number</label>
+      <input type="text" id="reg_number" placeholder="e.g. 2021-04-12345" autocomplete="off">
+
+      <label for="company">Company / Placement</label>
+      <select id="company">
+        <option value="">— Select your placement —</option>
+        <option value="Isamani Tours and Safari">Isamani Tours and Safari</option>
+      </select>
+
+      <button id="submitBtn" onclick="submitAttendance()">
+        <span class="loading" id="loadingSpinner"><span class="spinner"></span></span>
+        Mark Attendance
+      </button>
+    </div>
+
+    <div class="alert" id="alertBox"></div>
+
+    <p class="meta">One submission per device per day &bull; Device metadata is recorded</p>
+  </div>
+
+  <script>
+    // Show current date
+    const now = new Date();
+    document.getElementById('dateBadge').textContent = now.toLocaleDateString('en-TZ', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Canvas fingerprint
+    function getCanvasHash() {
+      try {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.textBaseline = 'top';
+        ctx.font = '14px Arial';
+        ctx.fillStyle = '#f60';
+        ctx.fillRect(125, 1, 62, 20);
+        ctx.fillStyle = '#069';
+        ctx.fillText('FPT-TZ-2025', 2, 15);
+        ctx.fillStyle = 'rgba(102,204,0,0.7)';
+        ctx.fillText('FPT-TZ-2025', 4, 17);
+        return canvas.toDataURL().slice(-32);
+      } catch(e) { return 'no-canvas'; }
+    }
+
+    // Get geolocation
+    function getLocation() {
+      return new Promise((resolve) => {
+        if (!navigator.geolocation) return resolve({ lat: '', lng: '' });
+        navigator.geolocation.getCurrentPosition(
+          pos => resolve({ lat: pos.coords.latitude.toString(), lng: pos.coords.longitude.toString() }),
+          () => resolve({ lat: '', lng: '' }),
+          { timeout: 5000 }
+        );
+      });
+    }
+
+    function showAlert(type, message) {
+      const box = document.getElementById('alertBox');
+      box.className = `alert ${type}`;
+      box.textContent = message;
+      box.style.display = 'block';
+    }
+
+    async function submitAttendance() {
+      const full_name = document.getElementById('full_name').value.trim();
+      const reg_number = document.getElementById('reg_number').value.trim();
+      const company = document.getElementById('company').value;
+
+      if (!full_name || !reg_number || !company) {
+        showAlert('error', 'Please fill in all fields.');
+        return;
+      }
+
+      const btn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('loadingSpinner');
+      btn.disabled = true;
+      spinner.style.display = 'inline';
+
+      const location = await getLocation();
+
+      const payload = {
+        full_name,
+        reg_number,
+        company,
+        screen_resolution: `${screen.width}x${screen.height}`,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        language: navigator.language,
+        canvas_hash: getCanvasHash(),
+        latitude: location.lat,
+        longitude: location.lng,
+      };
+
+      try {
+        const res = await fetch('/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showAlert('success', data.message);
+          document.getElementById('full_name').value = '';
+          document.getElementById('reg_number').value = '';
+          document.getElementById('company').value = '';
+          btn.disabled = true; // prevent double submit after success
+          spinner.style.display = 'none';
+          btn.textContent = '✓ Submitted';
+        } else {
+          showAlert('error', data.message);
+          btn.disabled = false;
+          spinner.style.display = 'none';
+        }
+      } catch(e) {
+        showAlert('error', 'Network error. Please try again.');
+        btn.disabled = false;
+        spinner.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

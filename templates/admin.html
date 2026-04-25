@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FPT Admin — Attendance Records</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0a0f1e; color: #e5e7eb; font-family: 'Segoe UI', sans-serif; padding: 32px 24px; }
+
+    h1 { color: #f59e0b; font-size: 22px; margin-bottom: 4px; }
+    .sub { color: #6b7280; font-size: 13px; margin-bottom: 32px; }
+
+    .stats { display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat {
+      background: #111827;
+      border: 1px solid #1f2d45;
+      border-radius: 10px;
+      padding: 18px 24px;
+      min-width: 140px;
+    }
+    .stat .num { font-size: 32px; font-weight: 700; color: #f59e0b; }
+    .stat .lbl { font-size: 12px; color: #6b7280; margin-top: 4px; text-transform: uppercase; }
+
+    h2 { font-size: 15px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+
+    table { width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 13px; }
+    th { background: #1f2937; color: #9ca3af; text-align: left; padding: 10px 14px; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+    td { padding: 10px 14px; border-bottom: 1px solid #1f2937; color: #d1d5db; }
+    tr:hover td { background: #111827; }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge.isamani { background: #1c3a2a; color: #4ade80; }
+    .badge.visitkili { background: #1e3a5f; color: #60a5fa; }
+    .badge.kilinge { background: #3b1f2a; color: #f472b6; }
+  </style>
+</head>
+<body>
+  <h1>FPT Attendance Dashboard</h1>
+  <p class="sub">{{ today.strftime('%A, %d %B %Y') }} &mdash; Admin view</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num">{{ records|length }}</div>
+      <div class="lbl">Today's Check-ins</div>
+    </div>
+    <div class="stat">
+      <div class="num">{{ records|selectattr('company', 'equalto', 'Isamani Tours and Safari')|list|length }}</div>
+      <div class="lbl">Isamani</div>
+    </div>
+    <div class="stat">
+      <div class="num">{{ records|selectattr('company', 'equalto', 'Visit Kili Adventures')|list|length }}</div>
+      <div class="lbl">Visit Kili</div>
+    </div>
+    <div class="stat">
+      <div class="num">{{ records|selectattr('company', 'equalto', 'Kilinge Adventures')|list|length }}</div>
+      <div class="lbl">Kilinge</div>
+    </div>
+  </div>
+
+  <h2>Today's Attendance</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Reg Number</th>
+        <th>Company</th>
+        <th>Time</th>
+        <th>IP</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ r.full_name }}</td>
+        <td><code>{{ r.reg_number }}</code></td>
+        <td>
+          {% if 'Isamani' in r.company %}
+            <span class="badge isamani">Isamani</span>
+          {% elif 'Kili' in r.company %}
+            <span class="badge visitkili">Visit Kili</span>
+          {% else %}
+            <span class="badge kilinge">Kilinge</span>
+          {% endif %}
+        </td>
+        <td>{{ r.submitted_at.strftime('%H:%M:%S') }}</td>
+        <td>{{ r.ip_address }}</td>
+        <td>
+          {% if r.latitude %}
+            <a href="https://maps.google.com/?q={{ r.latitude }},{{ r.longitude }}" target="_blank" style="color:#f59e0b">
+              {{ r.latitude[:7] }}, {{ r.longitude[:7] }}
+            </a>
+          {% else %}
+            —
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" style="color:#4b5563; text-align:center; padding:24px;">No submissions yet today.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Recent Records (Last 100)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Reg Number</th>
+        <th>Company</th>
+        <th>Time</th>
+        <th>Fingerprint</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in all_records %}
+      <tr>
+        <td>{{ r.date_only }}</td>
+        <td>{{ r.full_name }}</td>
+        <td><code>{{ r.reg_number }}</code></td>
+        <td>{{ r.company }}</td>
+        <td>{{ r.submitted_at.strftime('%H:%M') }}</td>
+        <td style="color:#4b5563; font-size:11px;"><code>{{ r.device_fingerprint[:12] }}...</code></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
