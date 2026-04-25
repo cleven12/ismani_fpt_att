@@ -36,7 +36,7 @@
       font-size: 11px;
       font-weight: 600;
     }
-    .badge.isamani { background: #1c3a2a; color: #4ade80; }
+    .badge.Ismani { background: #1c3a2a; color: #4ade80; }
     .badge.visitkili { background: #1e3a5f; color: #60a5fa; }
     .badge.kilinge { background: #3b1f2a; color: #f472b6; }
   </style>
@@ -51,8 +51,8 @@
       <div class="lbl">Today's Check-ins</div>
     </div>
     <div class="stat">
-      <div class="num">{{ records|selectattr('company', 'equalto', 'Isamani Tours and Safari')|list|length }}</div>
-      <div class="lbl">Isamani</div>
+      <div class="num">{{ records|selectattr('company', 'equalto', 'Ismani Tours and Safari')|list|length }}</div>
+      <div class="lbl">Ismani</div>
     </div>
     <div class="stat">
       <div class="num">{{ records|selectattr('company', 'equalto', 'Visit Kili Adventures')|list|length }}</div>
@@ -84,8 +84,8 @@
         <td>{{ r.full_name }}</td>
         <td><code>{{ r.reg_number }}</code></td>
         <td>
-          {% if 'Isamani' in r.company %}
-            <span class="badge isamani">Isamani</span>
+          {% if 'Ismani' in r.company %}
+            <span class="badge Ismani">Ismani</span>
           {% elif 'Kili' in r.company %}
             <span class="badge visitkili">Visit Kili</span>
           {% else %}
