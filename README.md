@@ -1,5 +1,5 @@
-# FPT Attendance System
-**fpt.isamanitours.com** — Field Practical Training attendance tracker
+# FPT HR Report
+**v2.visitkili.com** — Field Practical Training attendance tracker
 
 Built for: Isamani Tours & Safari / Visit Kili Adventures / Kilinge Adventures
 
@@ -69,7 +69,7 @@ ismani_fpt_att/
 ├── .env.example
 ├── templates/
 │   ├── index.html      ← attendance form
-│   └── admin.html      ← supervisor dashboard
+│   └── admin.html      ← HR dashboard
 └── instance/
     └── attendance.db   ← SQLite DB (auto-created)
 ```
